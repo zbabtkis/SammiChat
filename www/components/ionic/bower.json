@@ -1,0 +1,65 @@
+{
+  "name": "ionic",
+  "version": "0.9.25",
+  "homepage": "https://github.com/driftyco/ionic",
+  "authors": [
+    "Max Lynch <max@drifty.com>",
+    "Adam Bradley <adam@drifty.com>",
+    "Ben Sperry <ben@drifty.com>"
+  ],
+  "description": "Advanced HTML5 hybrid mobile app development framework.",
+  "main": [
+    "release/css/ionic.css",
+    "release/fonts/*",
+    "release/js/ionic.js",
+    "release/js/ionic-angular.js"
+  ],
+  "keywords": [
+    "mobile",
+    "html5",
+    "ionic",
+    "cordova",
+    "phonegap",
+    "trigger",
+    "triggerio",
+    "angularjs",
+    "angular",
+    "ratchet",
+    "bootstrap"
+  ],
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "CONTRIBUTING.md",
+    "Gruntfile.js",
+    "component.json",
+    "config",
+    "examples",
+    "package.json",
+    "release/js/angular",
+    "release/js/angular-ui",
+    "scripts",
+    "test",
+    "js/controllers",
+    "js/ext",
+    "js/utils",
+    "js/views",
+    "js/_license.js",
+    "js/ionic.js"
+  ],
+  "dependencies": {
+    "angular": "1.2.10",
+    "angular-animate": "1.2.10",
+    "angular-sanitize": "1.2.10",
+    "angular-ui-router": "0.2.7"
+  },
+  "gitHead": "594256d85a18e4cb88c3dd1a163a048d82bb6247",
+  "readme": "<a href=\"https://travis-ci.org/driftyco/ionic\"><img src=\"https://travis-ci.org/driftyco/ionic.png?branch=master\" data-bindattr-164=\"164\" title=\"Build Status Images\"></a>\n\nThe best place to start with Ionic is our [documentation page](http://ionicframework.com/docs/).\n\nNote: __Ionic is Alpha software__ and currently best supports iOS 6+ and Android 4.1+ (though we are working on Android performance improvements). Ionic is changing quickly as we work towards the beta.\n\n# What is Ionic?\n\nIonic is the open source HTML5 Mobile Framework for building amazing, cross-platform hybrid native apps with HTML, JavaScript, and CSS. Just like this one:\n\n![Weather Demo](http://ionicframework.com/img/weather1x.png)\n\nWe built Ionic because we wanted a framework that focused on building hybrid native apps, rather than mobile websites. We wanted this framework to be obsessive about great design and performance. A framework that left the past behind and focused on the future where mobile devices could make HTML5 feel native.\n\nIt's important to realize that Ionic is not a replacement for frameworks used for building mobile web apps. There are a lot\nof great solutions that work well for websites, like [jQuery Mobile](http://jquerymobile.com/).\n\nIonic is also not a good solution if you need to support older generation devices. Our [compatibility](http://ionicframework.com/docs/#browser-support) *starts* at iOS 6 and Android 4.1. We will never support versions earlier than those. This is a framework for the future. Learn more: [Where does the Ionic Framework fit in?](http://ionicframework.com/blog/where-does-the-ionic-framework-fit-in/)\n\n\n## Quick Start\n\nTo start using ionic, you have two options: copy over the built JS and CSS files, or\nuse the `ionic` tool ([ionic-cli](https://github.com/driftyco/ionic-cli)) which can be installed through npm:\n\n```bash\n$ sudo npm install -g ionic\n```\n\nThen, you can start a new ionic project by running:\n\n```bash\n$ ionic start myproject\n```\n\n### Manual Start\n\n- Download the latest **stable** release from:\n  * The release folder of this repository\n  * The Ionic CDN: [Latest Release](http://code.ionicframework.com/)\n  * `bower install ionic` \n- Download the **bleeding edge just-from-master release** from:\n  * The Ionic CDN: [Nightly Build](http://code.ionicframework.com/#nightly)\n  * Look in the [ionic-bower Repository](https://github.com/driftyco/ionic-bower) for the latest version, and do for example `bower install driftyco/ionic-bower#0.9.23-alpha-652` (`bower install ionic` will have the latest available soon)\n  \nOnce you have a release, use `js/ionic.js`, `js/ionic-angular.js`, and `css/ionic.css`.\n\nFor most cases, you'll need AngularJS as well.  This is bundled in `js/angular/` and `js/angular-ui-router/`.\n\n\n## Demos\n\n - [Ionic Codepen.io Demos](http://codepen.io/ionic/public-list)\n\n\n## Community\n\n* Follow [@ionicframework on Twitter](https://twitter.com/ionicframework).\n* Subscribe to the [Ionic Newsletter](http://ionicframework.com/subscribe/).\n* Have a question that's not a feature request or bug report? [Discuss on the Ionic Forum](http://forum.ionicframework.com/).\n* Read our [Blog](http://ionicframework.com/blog/).\n* Have a feature request or find a bug? [Submit an issue](https://github.com/driftyco/ionic/issues).\n\n\n## Authors\n\n**Max Lynch**\n\n+ <https://twitter.com/maxlynch>\n+ <https://github.com/mlynch>\n\n**Ben Sperry**\n\n+ <https://twitter.com/helloimben>\n+ <https://github.com/bensperry>\n\n**Adam Bradley**\n\n+ <https://twitter.com/adamdbradley>\n+ <https://github.com/adamdbradley>\n\n## Development\n\n* `npm install` to setup\n* `grunt` to jshint & build\n* `grunt watch` to watch and rebuild on change\n* `grunt karma:single` to test one-time\n* `grunt karma:watch` to test and re-run on source change\n* Additionally, a commit message validator is installed for this repository when running `grunt`.  Read about it [here](https://github.com/ajoslin/conventional-changelog/blob/master/CONVENTIONS.md).\n\n### Commit Conventions\n\n* Uses http://github.com/ajoslin/conventional-changelog conventions\n\n### Pushing Releases\n\n(uses AngularJS's bash utils - when you run any script, run it with `--git-push-dryrun=true` to do 'mock' git pushes)\n\n* Run `./scripts/release/finalize-version.sh --action=prepare` to:\n  - Remove version suffix\n  - Write new version to package/bower/component.json\n  - Move build files to `release/`\n  - Commit & tag the release\n* Run `./scripts/release/finalize-version.sh --action=publish` to:\n  - Push out new version\n* Once new version is pushed out, run `./scripts/release/initialize-new-version.sh` (usage is shown in file), to bump to next version with bump type / version suffix / version name specified.\n\n## LICENSE\n\nIonic is licensed under the MIT Open Source license. For more information, see the LICENSE file in this repository.\n",
+  "readmeFilename": "README.md",
+  "_id": "ionic@0.9.25",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/driftyco/ionic.git"
+  }
+}

@@ -1,0 +1,25 @@
+<ion-side-menus>
+
+	<!-- Render word list here -->
+	<ion-pane ion-side-menu-content ng-view>
+</ion-pane>
+
+	<!-- Category list side menu -->
+	<ion-side-menu side='left'>
+		<div class='bar bar-header bar-royal'>
+			<h1 class='title'>Categories</h1>
+		</div>
+		<ion-content class='has-header'>
+			<ion-list>
+				<ion-item ng-click='setCategory(c)' ng-repeat='c in categories' item='label'>{{c.label}}</ion-item>
+			</ion-list>
+			<label class="item item-input-inset">
+				<i class="icon ion-plus placeholder-icon"></i>&nbsp; 
+				<input type='text' ng-enter='saveCategory(newCategory)' ng-model='newCategory.label' placeholder="Add a vocabulary" />
+			</label>
+		</ion-content>
+
+	<!-- End side menu -->
+	</ion-side-menu>
+</ion-side-menus>
+

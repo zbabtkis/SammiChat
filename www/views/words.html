@@ -1,0 +1,17 @@
+<div class="bar bar-header bar-energized">
+	<button class="button" ng-click="toggleMenu()">Vocabs</button>
+	<h1 class="title">{{category.label}}</h1>
+</div>
+<div class="bar bar-subheader bar-stable">
+	<h3 class='title'>{{currentStatement}}</h3>
+</div>
+<ion-content class='has-header has-subheader has-footer'>
+	<ion-list ng-hide='hide' can-swipe='true' can-delete='true' option-buttons='itemButtons'>
+		<ion-item item='word' ng-repeat='word in words track by word.id' ng-click='selectWord(word)'><i ng-class='{active: word.active}' class='ion-chatbubble'></i> {{word.text}}</ion-item>
+	</ion-list>
+</ion-content>
+<div class='bar bar-footer bar-stable'>
+	<label class='item item-input wide'>
+		<input ng-disabled='hide' type='text' ng-enter='saveWord(newWord)' ng-model='newWord.text' placeholder="Add a word" />
+	</label>
+</div>

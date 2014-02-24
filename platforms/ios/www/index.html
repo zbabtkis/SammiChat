@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+		<link rel="stylesheet" type="text/css" href="components/ionic/release/css/ionic.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Hello World</title>
+    </head>
+    <body ng-app='SammiApp'>
+        <div ng-controller='CategoryCtrl'>
+			<ion-side-menus>
+
+				<!-- Render word list here -->
+				<ion-pane ion-side-menu-content ng-view>
+			</ion-pane>
+
+				<!-- Category list side menu -->
+				<ion-side-menu side='left'>
+					<div class='bar bar-header bar-royal'>
+						<h1 class='title'>Categories</h1>
+					</div>
+					<ion-content class='has-header'>
+						<ion-list can-swipe='true' can-delete='true' can-edit='true' >
+							<ion-item ng-click='setCategory(c)' ng-repeat='c in categories' item='c' option-buttons='btns'>{{c.label}}</ion-item>
+						</ion-list>
+						<label class="item item-input-inset">
+							<i class="icon ion-plus placeholder-icon"></i>&nbsp; 
+							<input type='text' ng-enter='saveCategory(newCategory)' ng-model='newCategory.label' placeholder="Add a vocabulary" />
+						</label>
+					</ion-content>
+
+				<!-- End side menu -->
+				</ion-side-menu>
+			</ion-side-menus>
+
+        </div>
+        <script type="text/javascript" src="phonegap-desktop.js"></script>
+		<script type="text/javascript" src="components/angular/angular.js"></script>
+		<script type="text/javascript" src="components/angular-route/angular-route.js"></script>
+		<script type="text/javascript" src="components/angular-ui-router/release/angular-ui-router.js"></script>
+		<script type="text/javascript" src="components/angular-animate/angular-animate.js"></script>
+		<script type="text/javascript" src="components/ionic/release/js/ionic.min.js"></script>
+		<script type="text/javascript" src="components/ionic/release/js/ionic-angular.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript" src="js/services/db.js"></script>
+		<script type="text/javascript" src="js/services/speak.js"></script>
+		<script type="text/javascript" src="js/services/word.js"></script>
+		<script type="text/javascript" src="js/services/category.js"></script>
+    </body>
+</html>

@@ -1,0 +1,19 @@
+<div class="bar bar-header bar-energized">
+	<button class="button" ng-click="toggleMenu()">Vocabs</button>
+	<h1 class="title">Vocab<h1>
+</div>
+<ion-content class='has-header has-footer'>
+<div class='card'>
+	<div class='item item-divider'>
+		Choose a vocabulary
+	</div>
+	<div class='item item-text-wrap'>
+		Swipe right to open up the vocabularies list. From there you can choose an existing vocabulary or create a new one. 
+	</div>
+</div>
+</ion-content>
+<div class='bar bar-footer bar-stable'>
+	<label class='item item-input wide'>
+		<input ng-disabled="'true'" type='text' ng-enter='saveWord(newWord)' ng-model='newWord.text' placeholder="Add a word" />
+	</label>
+</div>
