@@ -1,9 +1,9 @@
 <div class="bar bar-header bar-energized">
 	<button class="button" ng-click="toggleMenu()">Vocabs</button>
-	<h1 class="title">{{category.label}}</h1>
+	<h1 class='title'>{{category.label}}<h1>
 </div>
 <div class="bar bar-subheader bar-stable">
-	<h3 class='title'>{{currentStatement}}</h3>
+	<h4><i ng-show='currentStatement' class='ion-close light' sentence-reset></i></h4><h4 class='title'>{{currentStatement}}</h4>
 </div>
 <ion-content class='has-header has-subheader has-footer'>
 	<ion-list ng-hide='hide' can-swipe='true' can-delete='true' option-buttons='itemButtons'>

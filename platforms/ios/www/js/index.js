@@ -1,5 +1,12 @@
 var app = angular.module('SammiApp', ['ngRoute', 'ionic', 'ionic.ui.sideMenu']);
 
+String.prototype.splice = String.prototype.splice || function() {
+	var split = this.split('');
+	split.splice.apply(split, arguments);
+
+	return split.join('');
+};
+
 app.config(function($routeProvider) {
 	$routeProvider
 		.when('/', {
@@ -18,15 +25,19 @@ app.config(function($routeProvider) {
 app.run(function($rootScope, DB, Speak) {
 	DB.initialize();
 	Speak.initialize();
-	function onDeviceReady() {
-		if (parseFloat(window.device.version) === 7.0) {
-			  document.body.style.marginTop = "20px";
-		}
-	}
-	  
-	document.addEventListener('deviceready', onDeviceReady, false);
 });
 
+
+app.directive('sentenceReset', function() {
+	return {
+		restrict: "A",
+		link: function(scope, elem, attrs) {
+			console.log(elem);
+			console.log(scope);
+			elem.bind('click', scope.resetSentence);
+		}
+	};
+});
 app.directive('ngEnter', function () {
 	return {
 		link: function (scope, elements, attrs) {
@@ -73,12 +84,10 @@ app.controller('WordsCtrl', function($scope, $routeParams, $rootScope, Word, Cat
 		});
 	};
 
-	$scope.refresh = function() {
-		console.log(arguments);
-	};
-
 	$scope.saveWord = function(word) {
 		if(!word.text) return;
+
+		word.text = word.text.trim();
 
 		if(word.isNew) {
 			word.category = $scope.category.id;
@@ -92,6 +101,8 @@ app.controller('WordsCtrl', function($scope, $routeParams, $rootScope, Word, Cat
 	$rootScope.currentStatement = "";
 
 	$scope.selectWord = function(word) {
+		var ind;
+
 		if(!word.active) {
 			$rootScope.currentStatement += word.text + ' ';
 			Speak.request()
@@ -99,14 +110,19 @@ app.controller('WordsCtrl', function($scope, $routeParams, $rootScope, Word, Cat
 				say(word.text);
 			});
 			word.active = true;
+		} else {
+			$rootScope.currentStatement = $rootScope.currentStatement
+				.replace(word.text + " ", "");
+			word.active = false;
 		}
 	};
 
-	$scope.reset = function() {
+	$scope.resetSentence = function() {
 		$rootScope.currentStatement = "";
 		$scope.words.forEach(function(word) {
 			word.active = false;
 		});
+		$rootScope.$apply();
 	};
 
 	$scope.deleteWord = function(word) {

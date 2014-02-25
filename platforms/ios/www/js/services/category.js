@@ -60,6 +60,10 @@ app.factory('Category', function(DB, $q) {
 				"DELETE FROM categories " +
 				"WHERE id=" + _this.id
 			);
+
+			db.query(db.QUERY, "DELETE FROM words" + 
+				"WHERE category=" + _this.id
+			);
 		});
 	};
 
