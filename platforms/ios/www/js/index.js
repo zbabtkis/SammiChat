@@ -1,13 +1,6 @@
 var app = angular.module('SammiApp', ['ngRoute', 'ionic', 'ionic.ui.sideMenu']);
 
-String.prototype.splice = String.prototype.splice || function() {
-	var split = this.split('');
-	split.splice.apply(split, arguments);
-
-	return split.join('');
-};
-
-app.config(function($routeProvider) {
+app.config(['$routeProvider', function($routeProvider) {
 	$routeProvider
 		.when('/', {
 			templateUrl: 'views/instructions.html',
@@ -20,24 +13,23 @@ app.config(function($routeProvider) {
 		.otherwise({
 			redirectTo: '/'
 		});	
-});
+}]);
 
-app.run(function($rootScope, DB, Speak) {
+app.run(['$rootScope', 'DB', 'Speak', function($rootScope, DB, Speak) {
 	DB.initialize();
 	Speak.initialize();
-});
+}]);
 
 
 app.directive('sentenceReset', function() {
 	return {
 		restrict: "A",
 		link: function(scope, elem, attrs) {
-			console.log(elem);
-			console.log(scope);
 			elem.bind('click', scope.resetSentence);
 		}
 	};
 });
+
 app.directive('ngEnter', function () {
 	return {
 		link: function (scope, elements, attrs) {
@@ -53,7 +45,13 @@ app.directive('ngEnter', function () {
 	};
 });
 
-app.controller('WordsCtrl', function($scope, $routeParams, $rootScope, Word, Category, Speak) {
+app.controller('WordsCtrl', ['$injector', function($injector) {
+	var $scope       = $injector.get('$scope')
+	  , $routeParams = $injector.get('$routeParams')
+	  , $rootScope   = $injector.get('$rootScope')
+	  , Word         = $injector.get('Word')
+	  , Speak        = $injector.get('Speak');
+
 	Category.queryOne({id:$routeParams.vocabId})
 		.then(function(cat) {
 			$scope.category = cat;
@@ -100,21 +98,29 @@ app.controller('WordsCtrl', function($scope, $routeParams, $rootScope, Word, Cat
 
 	$rootScope.currentStatement = "";
 
+	$rootScope.say = function(word) {
+		Speak.request()
+			.then(function(say) {
+				say(word);
+			});
+	};
+
 	$scope.selectWord = function(word) {
 		var ind;
 
 		if(!word.active) {
 			$rootScope.currentStatement += word.text + ' ';
-			Speak.request()
-				.then(function(say) {
-				say(word.text);
-			});
+			$scope.say(word.text);
 			word.active = true;
 		} else {
 			$rootScope.currentStatement = $rootScope.currentStatement
 				.replace(word.text + " ", "");
 			word.active = false;
 		}
+	};
+
+	$scope.readStatement = function() {
+		$scope.read($scope.currentStatement);
 	};
 
 	$scope.resetSentence = function() {
@@ -133,27 +139,27 @@ app.controller('WordsCtrl', function($scope, $routeParams, $rootScope, Word, Cat
 	};
 
 	$scope.itemButtons = [
-    {
-      text: 'Edit',
-      type: 'button-calm',
-      onTap: function(word) {
-		$scope.newWord = angular.copy(word);
-		$scope.deleteWord(word);
-      }
-    },
-    {
-      text: 'Delete',
-      type: 'button-assertive',
-      onTap: $scope.deleteWord 
-    }
-  ];
+		{
+			text: 'Edit',
+			type: 'button-calm',
+			onTap: function(word) {
+				scope.newWord = angular.copy(word);
+				scope.deleteWord(word);
+			}
+		},
+		{
+			text: 'Delete',
+			type: 'button-assertive',
+			onTap: $scope.deleteWord 
+		}
+	];
 
 	$scope.toggleMenu = function() {
 		 $scope.sideMenuController.toggleLeft();
 	};
-});
+}]);
 
-app.controller('CategoryCtrl', function($scope, Category, $location) {
+app.controller('CategoryCtrl', ['$scope', 'Category', '$location', function($scope, Category, $location) {
 	$scope.newCategory = new Category();
 
 	Category.query()
@@ -187,16 +193,16 @@ app.controller('CategoryCtrl', function($scope, Category, $location) {
 	};
 
 	$scope.btns = [
-    {
-      text: 'Edit',
-      type: 'button-calm',
-      onTap: $scope.editCategory 
-    },
-    {
-      text: 'Delete',
-      type: 'button-assertive',
-      onTap: $scope.deleteCategory 
-    }
+		{
+			text: 'Edit',
+			type: 'button-calm',
+			onTap: $scope.editCategory 
+		},
+		{
+			text: 'Delete',
+			type: 'button-assertive',
+			onTap: $scope.deleteCategory 
+		}
   ];
 
-});
+}]);
