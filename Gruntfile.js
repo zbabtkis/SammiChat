@@ -16,8 +16,8 @@ module.exports = function(grunt) {
 						"www/components/angular-route/angular-route.js",
 						"www/components/angular-ui-router/release/angular-ui-router.js",
 						"www/components/angular-animate/angular-animate.js",
-						"www/components/ionic/release/js/ionic-angular.min.js",
-						"www/components/ionic/release/js/ionic.min.js"
+						"www/components/ionic/release/js/ionic.js",
+						"www/components/ionic/release/js/ionic-angular.js"
 					]
 				}
 			}

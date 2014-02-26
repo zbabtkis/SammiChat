@@ -1,4 +1,4 @@
-app.run(function(DB) {
+app.run(['DB', function(DB) {
 	DB.requestDB().then(function(db) {	
 		/**db.query(
 			db.QUERY,
@@ -19,9 +19,9 @@ app.run(function(DB) {
 				]
 		});
 	});
-});
+}]);
 
-app.factory('Category', function(DB, $q) {
+app.factory('Category', ['DB', '$q', function(DB, $q) {
 	var Category = function(options) {
 		this.id = null;
 		this.label = "";
@@ -128,4 +128,4 @@ app.factory('Category', function(DB, $q) {
 	};
 
 	return Category;
-});
+}]);

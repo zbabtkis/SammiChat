@@ -1,4 +1,4 @@
-app.service('DB', function($rootScope, $window, $q) {
+app.service('DB', ['$rootScope', '$window', '$q', function($rootScope, $window, $q) {
 	var _db =  null
 	  , API = {};
 
@@ -80,5 +80,5 @@ app.service('DB', function($rootScope, $window, $q) {
 
 		return d.promise;
 	};
-});
+}]);
 

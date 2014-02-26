@@ -1,4 +1,5 @@
-app.service('DB', function($rootScope, $window, $q) {
+angular.module('Storage', [])
+	.service('DB', ['$rootScope', '$window', '$q', function($rootScope, $window, $q) {
 	var _db =  null
 	  , API = {};
 
@@ -80,5 +81,5 @@ app.service('DB', function($rootScope, $window, $q) {
 
 		return d.promise;
 	};
-});
+}]);
 

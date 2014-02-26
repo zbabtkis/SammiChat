@@ -1,4 +1,5 @@
-app.run(function(DB) {
+angular.module('Storage')
+	.run(['DB', function(DB) {
 	DB.requestDB().then(function(db) {	
 		/**db.query(
 			db.QUERY,
@@ -22,9 +23,10 @@ app.run(function(DB) {
 				]
 		});
 	});
-});
+}]);
 
-app.factory('Word', function(DB, $q) {
+angular.module('SammiApp')
+	.factory('Word', ['DB', '$q', function(DB, $q) {
 	var Word = function(options) {
 		angular.extend(this, options);
 	}	
@@ -114,4 +116,4 @@ app.factory('Word', function(DB, $q) {
 	};
 
 	return Word;
-});
+}]);

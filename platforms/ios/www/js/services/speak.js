@@ -1,4 +1,4 @@
-app.service('Speak', function($rootScope, $q) {
+app.service('Speak', ['$rootScope', '$q', function($rootScope, $q) {
 	return {
 		initialize: function() {
 			var ttsScript;
@@ -37,4 +37,4 @@ app.service('Speak', function($rootScope, $q) {
 			return d.promise;
 		}
 	};
-});
+}]);
