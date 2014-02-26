@@ -100,21 +100,29 @@ app.controller('WordsCtrl', function($scope, $routeParams, $rootScope, Word, Cat
 
 	$rootScope.currentStatement = "";
 
+	$rootScope.say = function(word) {
+		Speak.request()
+			.then(function(say) {
+				say(word);
+			});
+	};
+
 	$scope.selectWord = function(word) {
 		var ind;
 
 		if(!word.active) {
 			$rootScope.currentStatement += word.text + ' ';
-			Speak.request()
-				.then(function(say) {
-				say(word.text);
-			});
+			$scope.say(word.text);
 			word.active = true;
 		} else {
 			$rootScope.currentStatement = $rootScope.currentStatement
 				.replace(word.text + " ", "");
 			word.active = false;
 		}
+	};
+
+	$scope.readStatement = function() {
+		$scope.read($scope.currentStatement);
 	};
 
 	$scope.resetSentence = function() {
@@ -133,20 +141,20 @@ app.controller('WordsCtrl', function($scope, $routeParams, $rootScope, Word, Cat
 	};
 
 	$scope.itemButtons = [
-    {
-      text: 'Edit',
-      type: 'button-calm',
-      onTap: function(word) {
-		$scope.newWord = angular.copy(word);
-		$scope.deleteWord(word);
-      }
-    },
-    {
-      text: 'Delete',
-      type: 'button-assertive',
-      onTap: $scope.deleteWord 
-    }
-  ];
+		{
+			text: 'Edit',
+			type: 'button-calm',
+			onTap: function(word) {
+				scope.newWord = angular.copy(word);
+				scope.deleteWord(word);
+			}
+		},
+		{
+			text: 'Delete',
+			type: 'button-assertive',
+			onTap: $scope.deleteWord 
+		}
+	];
 
 	$scope.toggleMenu = function() {
 		 $scope.sideMenuController.toggleLeft();
@@ -187,16 +195,16 @@ app.controller('CategoryCtrl', function($scope, Category, $location) {
 	};
 
 	$scope.btns = [
-    {
-      text: 'Edit',
-      type: 'button-calm',
-      onTap: $scope.editCategory 
-    },
-    {
-      text: 'Delete',
-      type: 'button-assertive',
-      onTap: $scope.deleteCategory 
-    }
+		{
+			text: 'Edit',
+			type: 'button-calm',
+			onTap: $scope.editCategory 
+		},
+		{
+			text: 'Delete',
+			type: 'button-assertive',
+			onTap: $scope.deleteCategory 
+		}
   ];
 
 });
