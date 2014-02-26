@@ -1,4 +1,5 @@
-app.service('Speak', ['$rootScope', '$q', function($rootScope, $q) {
+angular.module('SammiApp')
+	.service('Speak', ['$rootScope', '$q', function($rootScope, $q) {
 	return {
 		initialize: function() {
 			var ttsScript;

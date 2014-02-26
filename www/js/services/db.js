@@ -1,4 +1,5 @@
-app.service('DB', ['$rootScope', '$window', '$q', function($rootScope, $window, $q) {
+angular.module('Storage', [])
+	.service('DB', ['$rootScope', '$window', '$q', function($rootScope, $window, $q) {
 	var _db =  null
 	  , API = {};
 
