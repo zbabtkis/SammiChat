@@ -1,8 +1,8 @@
 /**
  * SammiChat.WordCtrl
- * Manages state of words in a category
+ * Manages state of words in a Vocabulary
  *
- * @param $scope Current scope inherited from CategoryCtrl
+ * @param $scope Current scope inherited from VocabularyCtrl
  * @param $routeParams Holds information about current app state (category id)
  * @param $rootScope Top level scope accessible across controllers
  * @param Word Word model -- can be persisted, changed and removed
@@ -17,19 +17,20 @@
 		  , $routeParams = $injector.get('$routeParams')
 		  , $rootScope   = $injector.get('$rootScope')
 		  , Word         = $injector.get('Word')
+		  , Vocabulary   = $injector.get('Vocabulary')
 		  , Speak        = $injector.get('Speak');
 
 		// Load vocab object from vocab ID 
-		Category.queryOne({id:$routeParams.vocabId})
+		Vocabulary.queryOne({id:$routeParams.vocabId})
 			.then(function(cat) {
-				$scope.category = cat;
+				$scope.vocabulary = cat;
 			});	
 
 		// New word to be written to -- not saved to DB yet.
 		$scope.newWord = new Word();
 
 		// Whether or not a category ID is available
-		$scope.noCategory = !!$routeParams.vocabId;
+		$scope.noVocabulary = !!$routeParams.vocabId;
 
 		// Default statement text.
 		$rootScope.currentStatement = "";

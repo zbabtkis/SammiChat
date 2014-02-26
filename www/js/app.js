@@ -10,7 +10,7 @@
 
 ;(function(angular) {
 	var app = angular.module('SammiChat', [
-		'storage', 
+		'Storage', 
 		'ngRoute', 
 		'ionic', 
 		'ionic.ui.sideMenu']);

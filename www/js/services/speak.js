@@ -1,4 +1,4 @@
-angular.module('SammiApp')
+angular.module('SammiChat')
 	.service('Speak', ['$rootScope', '$q', function($rootScope, $q) {
 	return {
 		initialize: function() {
@@ -27,7 +27,7 @@ angular.module('SammiApp')
 		_say: function(text) {},
 		_isLoaded: false,
 		request: function() {
-			var d     = $q.defer();
+			var d = $q.defer();
 
 			if(this._isLoaded) {
 				d.resolve(this._say);	

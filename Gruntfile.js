@@ -4,11 +4,15 @@ module.exports = function(grunt) {
 			app: {
 				files: {
 					'www/build/app.js': [
-						'www/js/index.js',
-						'www/js/services/speak.js',
-						'www/js/services/db.js',
-						'www/js/services/word.js',
-						'www/js/services/category.js'
+						'www/js/services/DB.js',
+						'www/js/app.js',
+						'www/js/factories/Word.js',
+						'www/js/factories/Category.js',
+						'www/js/services/Speak.js',
+						'www/js/directives/directives.js',
+						'www/js/controllers/WordCtrl.js',
+						'www/js/controllers/VocabularyCtrl.js',
+						'www/js/update.js'
 					],
 					'www/build/deps.js': [
 						"www/phonegap.js",

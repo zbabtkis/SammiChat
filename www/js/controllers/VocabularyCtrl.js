@@ -1,7 +1,7 @@
 ;(function(angular) {
 
 	angular.module('SammiChat')
-		.controller('vocabularyCtrl', [
+		.controller('VocabularyCtrl', [
 			'$scope', 
 			'$location', 
 			'Vocabulary', 

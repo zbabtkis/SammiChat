@@ -55,7 +55,7 @@
 			});
 		};
 
-		Vocabylary.prototype.delete = function() {
+		Vocabulary.prototype.delete = function() {
 			var _this = this;
 
 			DB.requestDB().then(function(db) {

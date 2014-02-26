@@ -7,7 +7,9 @@ angular.module('Storage', [])
 	  , _version     = "1.0"
 	  , _description = "SammiApp Data Storage"
 	  , _size        = 100000
-	  , _readyEvent  = 'deviceready';
+	  , _readyEvent  = 'deviceready'
+	  , _updatesDone = false
+	  , _dbReady     = false;
 
 	// Create DB.
 	this.initialize = function() {
@@ -18,8 +20,22 @@ angular.module('Storage', [])
 				_description,
 				_size
 			); 
-			$rootScope.$emit('dbready');
+
+			if(_updatesDone) {
+				$rootScope.$emit('dbready');
+				_dbReady = true;
+			} else {
+				$rootScope.$on('dbUpdatesComplete', function() {
+					_dbReady = true;
+					$rootScope.$emit('dbready');
+				});
+			}
 		});
+	};
+
+	API.updatesComplete = function() {
+		$rootScope.$broadcat('dbUpdatesComplete');
+		
 	};
 
 	API.query = function(op) {
@@ -65,7 +81,7 @@ angular.module('Storage', [])
 
 	// Check if DB already exists.
 	this.exists = function() {
-		return !!_db;
+		return !!_dbReady;
 	};
 
 	this.requestDB = function() {

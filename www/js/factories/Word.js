@@ -25,7 +25,7 @@ angular.module('Storage')
 	});
 }]);
 
-angular.module('SammiApp')
+angular.module('SammiChat')
 	.factory('Word', ['DB', '$q', function(DB, $q) {
 	var Word = function(options) {
 		angular.extend(this, options);

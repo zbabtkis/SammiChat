@@ -22,10 +22,9 @@
 					}
 				}
 
-				elements.bind('keydown keypress', doAction): 
+				elements.bind('keydown keypress', doAction); 
 			}
 		};
 	});
-
 }).call(this, angular);
 
