@@ -32,11 +32,11 @@
 			});	
 	}]);
 
-	app.run(['$rootScope', 'DB', 'Speak', function($rootScope, DB, Speak) {
+	app.run(['$rootScope', 'DB', 'updates', 'Speak', function($rootScope, DB, updates, Speak) {
 
-		// Create or open DB for Read/Write
-		DB.initialize();
-		
+		// Create or open DB for Read/Write and apply updates
+		DB.initialize(updates);
+
 		// Setup SpeechSynthesis behavior
 		Speak.initialize();
 	}]);

@@ -19,7 +19,7 @@
 					label: [
 						"varchar(255)",
 					]
-			});
+			}, function() {}, function(e) { console.log(e); });
 		});
 	}]);
 
@@ -28,30 +28,28 @@
 		var Vocabulary = function(options) {
 			this.id = null;
 			this.label = "";
+			this.isNew = true;
 			angular.extend(this, options);
 		}	
 
-		Vocabulary.prototype.isNew = true;
-
 		Vocabulary.prototype.save = function() {
-			var _this = this;
+			var entry = { label: this.label }
+			  , _this = this;
 		
 			DB.requestDB().then(function(db) {
-				if(_this.isNew) {
-					db.query(db.QUERY,
-						"INSERT INTO vocabularies " + 
-						"(label) " +
-						"VALUES " +
-						"('" + _this.label + "')", 
-						[], function(tx, results) {
-						_this.id = results.insertId;
-					}, function(tx, e) { console.log(e);});
-				} else { db.query(db.QUERY,
-						"UPDATE vocabularies " + 
-						"set label=" + _this.label,
-						" WHERE id=" + _this.id
-					); 
+				var q = _this.isNew 
+					? db.query(db.INSERT, 'vocabularies', entry) 
+					: db.query(db.UPDATE, 'vocabularies', entry, {id: _this.id});
+
+				function onSuccess(tx, results) {
+					_this.id = results.insertId;
 				}
+
+				function onError(e) {
+					console.log(e);
+				}
+
+				q.then(onSuccess, onError);
 			});
 		};
 
@@ -59,14 +57,20 @@
 			var _this = this;
 
 			DB.requestDB().then(function(db) {
-				db.query(db.QUERY,
-					"DELETE FROM vocabularies " +
-					"WHERE id=" + _this.id
-				);
+				var qs = [
+					db.query(db.DELETE, "vocabularies", {id: _this.id}),
+					db.query(db.DELETE, 'words', {vocabulary: _this.id})
+				];
 
-				db.query(db.QUERY, "DELETE FROM words" + 
-					"WHERE vocabulary=" + _this.id
-				);
+				function onError(e) {
+					console.log(e);
+				}
+
+				function onSuccess(tx, results) {
+					// Can do stuff with results here later.
+				}
+
+				$.all(qs).then(onError, onSuccess);
 			});
 		};
 
@@ -76,41 +80,25 @@
 			  , d      = $q.defer();
 		
 			DB.requestDB().then(function(db) {
-				if(query && query.id) {
-					filter = " WHERE id='" + 
-						query.id + "'";
+				var q = query && query.id
+					? db.query(db.SELECT, 'vocabularies', null, {id: query.id})
+					: db.query(db.SELECT, 'vocabularies');
 
-					db.query(db.QUERY,
-						"SELECT * FROM vocabularies" + 
-						filter, [],
-						function(tx, results) {
-							var buffer = [];
+				function onSuccess(tx, results) {
+					var buffer = [];
 
-							for(var i = 0; i < results.rows.length; i++) {
-								buffer.push(new Vocabulary(results.rows.item(i)));
-							}
+					for(var i = 0; i < results.rows.length; i++) {
+						buffer.push(new Vocabulary(results.rows.item(i)));
+					}
 
-							d.resolve(buffer);
-						},
-						function(tx, err) { 
-							console.log(err);
-						}
-					);
-				} else {
-					db.query(db.QUERY,
-						"SELECT * FROM vocabularies",
-						[],
-						function(tx, results) {
-							var buffer = [];
-
-							for(var i = 0; i < results.rows.length; i++) {
-								buffer.push(new Vocabulary(results.rows.item(i)));
-							}
-
-							d.resolve(buffer);
-						}
-					);
+					d.resolve(buffer);
 				}
+
+				function onError(err) {
+					if(console.error) console.error(err);
+				}
+
+				q.then(onSuccess, onError);
 			});
 
 			return d.promise;

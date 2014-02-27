@@ -4,15 +4,16 @@ angular.module('Storage', [])
 	  , API = {};
 
 	var _NS          = "SammiApp"
-	  , _version     = "1.0"
+	  , _version     = ""
 	  , _description = "SammiApp Data Storage"
 	  , _size        = 100000
-	  , _readyEvent  = 'deviceready'
-	  , _updatesDone = false
-	  , _dbReady     = false;
+	  , _readyEvent  = 'deviceready';
+
+	var _updatesComplete = true
+	  , _dbReady         = false;
 
 	// Create DB.
-	this.initialize = function() {
+	this.initialize = function(migration) {
 		document.addEventListener(_readyEvent, function() {
 			_db = $window.openDatabase(
 				_NS, 
@@ -21,21 +22,20 @@ angular.module('Storage', [])
 				_size
 			); 
 
-			if(_updatesDone) {
+			if(migration) {
+				migration.runUpdates();
+			}
+
+			_dbready = true;
+
+			if(_updatesComplete) {
 				$rootScope.$emit('dbready');
-				_dbReady = true;
 			} else {
-				$rootScope.$on('dbUpdatesComplete', function() {
-					_dbReady = true;
+				$rootScope.$on('updatesComplete', function() {
 					$rootScope.$emit('dbready');
 				});
 			}
 		});
-	};
-
-	API.updatesComplete = function() {
-		$rootScope.$broadcat('dbUpdatesComplete');
-		
 	};
 
 	API.query = function(op) {
@@ -43,16 +43,61 @@ angular.module('Storage', [])
 		  , d     = $q.defer();
 
 		_db.transaction(function(tx) {
-			op.apply(API, [tx].concat(args));
+			op.apply(API, [tx].concat(args).concat([d]));
 		}, d.reject, d.resolve);
 
 		return d.promise;
 	};
 
-	API.QUERY = function(tx, query) {
-		var args = [].slice.call(arguments,1);
-		console.log(args);
+	API.QUERY = function(tx, query, d) {
+		var args = [].slice.call(arguments,1).concat([d.resolve, d.reject]);
 		tx.executeSql.apply(tx, args);
+	};
+
+	function getEquals(obj, joiner) {
+		var fields = Object.keys(values)
+		  , eq = fields.map(function(f) { return f + "=" + values[f]; });
+
+		return eq.join(joiner);
+	}
+
+	API.INSERT = function(tx, name, values, d) {
+		var fields = Object.keys(values).join(',')
+		  , vals   = fields.map(function(k) { return values[k]; });
+
+		tx.executeSql("INSERT INTO " 
+			+ name
+			+ " (" + fields.join(',') + ") "
+			+ "VALUES (" +
+			+ vals.join(',')
+			+ ")"
+		, [], d.resolve, d.reject);
+	};
+
+	API.SELECT = function(tx, name, fields, where, d) {
+		var fields = fields ? fields.join(',') : '*'
+		  , where  = where ? " WHERE " + getEquals(where, " AND ") : "";
+
+		tx.executeSql("SELECT " + fields
+			+ " FROM " + name + where, [], d.resolve, d.reject);
+	};
+
+	API.UPDATE = function(tx, name, values, where, d) {
+		var fields = Object.keys(values).join(',')
+		  , vals = getEquals(values, " , ")
+		  , where  = getEquals(where, " AND ");
+
+		tx.executeSql("UPDATE " 
+			+ name
+			+ " " + vals + " "
+			+ "WHERE" + where 
+		, [], d.resolve, d.reject);
+	};
+		
+	API.DELETE = function(tx, name, where, d) {
+		tx.executeSql("DELETE FROM " + name 
+			+ " WHERE " + getEquals(where, " AND ")
+			, [], d.resolve, d.reject);
 	};
 
 	API.CREATE_TABLE = function(tx, name, schema, success, err) {
@@ -80,14 +125,94 @@ angular.module('Storage', [])
 	};
 
 	// Check if DB already exists.
-	this.exists = function() {
+	this.exists = function(early) {
 		return !!_dbReady;
 	};
 
+	this.UPGRADE = function() {
+		_updatesDone = false;	
+		return true;
+	};
+
+	function upgrade(oldVer, newVer, callback) {
+		if(_db.version === oldVer) {
+			_db.changeVersion(oldVer, newVer, function() {
+				callback(API);
+			}, function() {}, function(e) {console.log(e); });
+
+			return true;
+		}
+
+		return false;
+	}
+
+	this.Migration = function() {
+		var migrations = []
+		  , versions   = [];
+
+		return {
+			migrate: function(version, update) {
+				var _this = this;
+
+				versions.push(version);	
+				migrations[version] = function() {
+					_db.changeVersion(_db.version, version, update, function() {}, _this.fail);
+				};
+			},
+
+			runUpdates: function() {
+				var i = (_db.version === "1.0") ? 0 : _db.version;
+
+				_updatesComplete = false;
+
+				if(_db.version === "") {
+					this.success();
+				}
+
+				// Remove upgrades that are before current DB version.
+				versions = versions.reduce(function(last, ver) { 
+						return ver <= i ? last.concat(ver) : last; 
+					}, []);
+
+				this.runUpdate();
+			},
+
+			version: function() {
+				var ind = versions.indexOf(
+					Math.min(versions)
+				), version = versions[ind];
+
+				versions = versions.slice(ind, 1);
+
+				return version;
+			},
+
+			runUpdate: function(update) {
+				var version = this.version();
+
+				if(typeof version !== 'undefined') {
+					migrations[version](_db)
+						.then(this.runUpdate, this.fail);
+				} else {
+					this.success();
+				}
+			}, 
+
+			fail: function(e) {
+				if(console.error) console.error(e);
+			},
+
+			success: function() {
+				_updatesComplete = true;
+				$rootScope.$broadcast('updatesComplete');
+			}
+		};
+	};
+				
 	this.requestDB = function() {
 		var d = $q.defer();
 
-		if(this.exists()) {
+		if(_dbReady && _updatesComplete) {
 			d.resolve(API);
 		} else {
 			$rootScope.$on('dbready', function() {

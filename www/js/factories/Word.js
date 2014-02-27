@@ -14,7 +14,7 @@ angular.module('Storage')
 					"PRIMARY KEY",
 					"AUTOINCREMENT"
 				],
-				category: [
+				vocabulary: [
 					"int",
 					"NOT NULL"
 				],
@@ -37,24 +37,26 @@ angular.module('SammiChat')
 		var _this = this;
 	
 		DB.requestDB().then(function(db) {
-			if(_this.isNew) {
-				db.query(db.QUERY,
-					"INSERT INTO words " + 
-					"(category, text) " +
-					"VALUES " +
-					"('" + 
-					[_this.category,_this.text]
-						.join("','") + 
-					"')", [], function(tx, results) {
+			var q = _this.isNew
+				? db.query(db.INSERT, 'words', {
+					vocabulary: _this.vocabulary,
+					text: _this.text})
+				: db.query(db.UPDATE, 'words', {
+					vocabulary: _this.vocabulary,
+					text: _this.text}, {
+					id: _this.id});
+
+			function onSuccess(tx, results) {
+				if(results.insertId) {
 					_this.id = results.insertId;
-				}, function(tx, e) { console.log(e);});
-			} else { db.query(db.QUERY,
-					"UPDATE words " + 
-					"set category=" + _this.category,
-					", text=" + _this.text,
-					" WHERE id=" + _this.id
-				); 
+				}
 			}
+
+			function onError(e) {
+				console.log(e);
+			}
+
+			q.then(onSuccess, onError);
 		});
 	};
 
@@ -62,10 +64,16 @@ angular.module('SammiChat')
 		var _this = this;
 
 		DB.requestDB().then(function(db) {
-			db.query(db.QUERY,
-				"DELETE FROM words " +
-				"WHERE id=" + _this.id
-			);
+			function onSuccess() {
+				// Add success stuff here
+			}
+
+			function onError(err) {
+				console.log(err);
+			}
+
+			db.query(db.DELETE, 'words', { id: _this.id })
+				.then(onSuccess, onError);
 		});
 	};
 
@@ -75,41 +83,25 @@ angular.module('SammiChat')
 		  , d      = $q.defer();
 
 		DB.requestDB().then(function(db) {
-			if(query && query.category) {
-				filter = " WHERE category='" + 
-					query.category + "'";
+			var q = query 
+					? db.query(db.SELECT, 'words', null, query)
+					: db.query(db.SELECT, 'words');
 
-				db.query(db.QUERY,
-					"SELECT * FROM words" + 
-					filter, [],
-					function(tx, results) {
-						var buffer = [];
+			function onSuccess(tx, results) {
+				var buffer = [];
 
-						for(var i = 0; i < results.rows.length; i++) {
-							buffer.push(new Word(results.rows.item(i)));
-						}
+				for(var i = 0; i < results.rows.length; i++) {
+					buffer.push(new Word(results.rows.item(i)));
+				}
 
-						d.resolve(buffer);
-					},
-					function(tx, err) { 
-						console.log(err);
-					}
-				);
-			} else {
-				db.query(db.QUERY,
-					"SELECT * FROM words",
-					[],
-					function(tx, results) {
-						var buffer = [];
-
-						for(var i = 0; i < results.rows.length; i++) {
-							buffer.push(new Word(results.rows.item(i)));
-						}
-
-						d.resolve(buffer);
-					}
-				);
+				d.resolve(buffer);
 			}
+
+			function onError(tx, err) { 
+				console.log(err);
+			}
+
+			q.then(onSuccess, onError);
 		});
 
 		return d.promise;

@@ -35,18 +35,18 @@
 				<ion-pane ion-side-menu-content ng-view>
 			</ion-pane>
 
-				<!-- Category list side menu -->
+				<!-- Vocabularies list side menu -->
 				<ion-side-menu side='left'>
 					<div class='bar bar-header bar-royal'>
 						<h1 class='title'>Vocabularies</h1>
 					</div>
 					<ion-content class='has-header'>
 						<ion-list can-swipe='true' can-delete='true' can-edit='true' >
-							<ion-item ng-click='setCategory(c)' ng-repeat='c in categories' item='c' option-buttons='btns'>{{c.label}}</ion-item>
+							<ion-item ng-click='setVocabulary(v)' ng-repeat='v in vocabularies' item='v' option-buttons='btns'>{{v.label}}</ion-item>
 						</ion-list>
 						<label class="item item-input-inset">
 							<i class="icon ion-plus placeholder-icon"></i>&nbsp; 
-							<input type='text' ng-enter='saveCategory(newCategory)' ng-model='newCategory.label' placeholder="Add a vocabulary" />
+							<input type='text' ng-enter='saveVocabulary(newVocabulary)' ng-model='newVocabulary.label' placeholder="Add a vocabulary" />
 						</label>
 					</ion-content>
 

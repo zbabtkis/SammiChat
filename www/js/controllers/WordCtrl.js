@@ -3,7 +3,7 @@
  * Manages state of words in a Vocabulary
  *
  * @param $scope Current scope inherited from VocabularyCtrl
- * @param $routeParams Holds information about current app state (category id)
+ * @param $routeParams Holds information about current app state (vocab id)
  * @param $rootScope Top level scope accessible across controllers
  * @param Word Word model -- can be persisted, changed and removed
  * @param Speak Service allowing speach through SpeachSynthesis API
@@ -12,9 +12,8 @@
 ;(function(angular) {
 
 	angular.module('SammiChat')
-		.controller('WordCtrl', ['$injector', function($injector) {
-		var $scope       = $injector.get('$scope')
-		  , $routeParams = $injector.get('$routeParams')
+		.controller('WordCtrl', ['$scope', '$injector', function($scope, $injector) {
+		var $routeParams  = $injector.get('$routeParams')
 		  , $rootScope   = $injector.get('$rootScope')
 		  , Word         = $injector.get('Word')
 		  , Vocabulary   = $injector.get('Vocabulary')
@@ -22,14 +21,14 @@
 
 		// Load vocab object from vocab ID 
 		Vocabulary.queryOne({id:$routeParams.vocabId})
-			.then(function(cat) {
-				$scope.vocabulary = cat;
+			.then(function(voc) {
+				$scope.vocabulary = voc;
 			});	
 
 		// New word to be written to -- not saved to DB yet.
 		$scope.newWord = new Word();
 
-		// Whether or not a category ID is available
+		// Whether or not a vocab ID is available
 		$scope.noVocabulary = !!$routeParams.vocabId;
 
 		// Default statement text.
@@ -40,21 +39,22 @@
 
 		// Get all words for current vocabulary ID
 		$scope.load = function() {
-			var cat = $scope.category;
+			var cat = $scope.vocabulary;
 
-			// If a category hasn't been set, we can't load words yet.
+			// If a vocabulary hasn't been set, we can't load words yet.
 			if(!cat) return;
 
-			Word.query({category: cat.id})
+			Word.query({vocabulary: cat.id})
 				.then(function(words) {
+					console.log(words);
 					$scope.words = words; 
 				}); 
 		};
 
-		// Load all words once category has been loaded
-		$scope.$watch('category', $scope.load);
+		// Load all words once voca has been loaded
+		$scope.$watch('vocabulary', $scope.load);
 
-		// Remove all words in this category from DB.
+		// Remove all words in this vocab from DB.
 		$scope.clear = function() {
 			$scope.words.forEach(function(word) {
 				word.delete();
@@ -63,7 +63,17 @@
 
 		// Add or update a word in list and DB
 		$scope.saveWord = function(word) {
+			var exists = false;
+
 			if(!word.text) return;
+
+			// Check to see if word already exists in list.
+			$scope.words.forEach(function(w) {
+				if(word.text === w.text) exists = true;
+			});
+	
+			// We shouldn't add word if it already exists in list.
+			if(exists) return;
 
 			// Get rid of any extra whitespace
 			word.text = word.text.trim();
@@ -72,7 +82,7 @@
 			if(word.isNew) {
 
 				// Word vocab is in current vocab route
-				word.category = $scope.category.id;
+				word.vocabulary = $scope.vocabulary.id;
 
 				// Add word to rendered list
 				$scope.words.push(word);
@@ -140,15 +150,18 @@
 			$scope.words.splice(ind, 1);
 		};
 
+		$scope.editWord = function(word) {
+			$scope.newWord = angular.copy(word);
+			$scope.deleteWord(word);
+		};
+			
+
 		// Buttons in list slide interaction
 		$scope.itemButtons = [
 			{
 				text: 'Edit',
 				type: 'button-calm',
-				onTap: function(word) {
-					scope.newWord = angular.copy(word);
-					scope.deleteWord(word);
-				}
+				onTap: $scope.editWord 
 			},
 			{
 				text: 'Delete',
